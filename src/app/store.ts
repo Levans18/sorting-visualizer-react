@@ -1,9 +1,9 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
-import counterReducer from '../features/counter/counterSlice';
+import sortingReducer from '../features/sorting/sortingSlice';
 
 export const store = configureStore({
   reducer: {
-    counter: counterReducer,
+    sorting: sortingReducer,
   },
 });
 

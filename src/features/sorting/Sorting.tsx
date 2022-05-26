@@ -6,7 +6,6 @@ import {
     newArray,
     selectArray,
 } from './sortingSlice';
-import styles from './Sorting.module.css';
 import './Sorting.css'
 
 

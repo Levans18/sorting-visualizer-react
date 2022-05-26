@@ -2,7 +2,6 @@ import React from 'react';
 import { store } from '../../app/store';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { selectArray } from '../sorting/sortingSlice';
-import styles from './Header.module.css';
 import './Header.css';
 
 export function Header(){
@@ -15,7 +14,7 @@ export function Header(){
             </h1>
             <ul>
                 <li>
-                    LEvans18
+                    Size {array.length}
                 </li>
             </ul>
         </header>

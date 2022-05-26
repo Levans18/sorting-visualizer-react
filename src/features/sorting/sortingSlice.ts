@@ -19,8 +19,8 @@ function createArray(max: number){
 export const sortingSlice = createSlice({
     name: 'sorting',
     initialState: {
-        array: createArray(25),
-        arraySize: 25,
+        array: createArray(1000),
+        arraySize: 1000,
     },
     reducers: {
         newArray: (state) => {

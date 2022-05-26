@@ -30,10 +30,9 @@ export function Footer() {
                 min="10" 
                 max="1000" 
                 className="slider" 
-                onChange={() => dispatch(sizeChange())}
                 >
             </input>
-            <div className="sorting-algorithm-buttons">
+            <div className="sorting-">
                 <button
                     className="bubble-sort"
                     aria-label="Bubble Sort"

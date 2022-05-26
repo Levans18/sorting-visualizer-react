@@ -21,6 +21,7 @@ export const sortingSlice = createSlice({
     initialState: {
         array: createArray(1000),
         arraySize: 1000,
+        sliderValue: 100,
     },
     reducers: {
         newArray: (state) => {

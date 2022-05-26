@@ -32,7 +32,7 @@ export function Footer() {
                 className="slider" 
                 >
             </input>
-            <div className="sorting-">
+            <div className="sorting-algorithm-buttons">
                 <button
                     className="bubble-sort"
                     aria-label="Bubble Sort"

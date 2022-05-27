@@ -1,5 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState, AppThunk } from '../../app/store';
+import { useAppSelector, useAppDispatch } from '../../app/hooks';
+import { store } from '../../app/store';
 
 export interface SortingState {
     array: Array<number>
@@ -16,11 +18,14 @@ function createArray(max: number){
     return arr;
 }
 
+function animateSorting(arrayOfArrays: any, state: any){
+}
+
 export const sortingSlice = createSlice({
     name: 'sorting',
     initialState: {
-        array: createArray(1000),
-        arraySize: 1000,
+        array: createArray(100),
+        arraySize: 100,
         sliderValue: 100,
     },
     reducers: {
@@ -28,32 +33,25 @@ export const sortingSlice = createSlice({
             state.array = createArray(state.arraySize);
         },
 
-        sizeChange: (state) => {
-            
+        sizeChange: (state, action) => {
+            state.array = createArray(action.payload)
         },
 
-        bubbleSort: (state) => {
-
-        },
-
-        selectionSort: (state) => {
-
-        },
-
-        quickSort: (state) => {
-
-        },
-
-        mergeSort: (state) => {
-
-        },
-
-
+        updateArray: (state, action) => {
+            let seconds = 0;
+            setInterval(() => {
+                if(seconds == 1){
+                  state.array = action.payload;
+                  clearInterval();
+                }
+                seconds += 1;
+            }, 1000)
+         },
     }
 });
 
 
-export const { newArray, sizeChange, bubbleSort, selectionSort, quickSort, mergeSort } = sortingSlice.actions;
+export const { newArray, sizeChange, updateArray} = sortingSlice.actions;
 export const selectArray = (state: RootState) => state.sorting.array;
 export const selectArraySize = (state: RootState) => state.sorting.array;
 export default sortingSlice.reducer

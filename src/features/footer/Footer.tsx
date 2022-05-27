@@ -5,10 +5,7 @@ import {
     newArray,
     selectArray,
     sizeChange,
-    bubbleSort,
-    selectionSort,
-    quickSort,
-    mergeSort,
+    updateArray,
 } from '../sorting/sortingSlice';
 import './Footer.css';
 
@@ -16,6 +13,25 @@ export function Footer() {
     const state = store.getState()
     const array = useAppSelector(selectArray);
     const dispatch = useAppDispatch();
+
+    async function bubbleSort(){
+        let tempArray: any = [];
+        for(let i = 0; i < array.length; i++){
+            tempArray[i] = array[i];
+        }
+        for (let i = 0; i < array.length; i++) {
+            for (let j = 0; j < array.length; j++) {
+                if (tempArray[j] > tempArray[j + 1]) {
+                    let tmp:any = tempArray[j];
+                    tempArray[j] = tempArray[j + 1];
+                    tempArray[j + 1] = tmp;
+                    let updateArr = [...tempArray]
+                    dispatch(updateArray(updateArr))
+                }
+            }
+        }
+    }
+
     return(
         <footer>
             <button
@@ -28,40 +44,54 @@ export function Footer() {
             <input 
                 type="range" 
                 min="10" 
-                max="1000" 
+                max="200" 
                 className="slider" 
+                onInput={(e: React.ChangeEvent<HTMLInputElement>) => dispatch(sizeChange(parseInt(e.target.value)))}
                 >
             </input>
             <div className="sorting-algorithm-buttons">
                 <button
                     className="bubble-sort"
                     aria-label="Bubble Sort"
-                    onClick={() => dispatch(bubbleSort())}
+                    onClick={() => bubbleSort()}
                     >
                     Bubble Sort
                 </button>
                 <button
                     className="selection-sort"
                     aria-label="Selection Sort"
-                    onClick={() => dispatch(selectionSort())}
+                    onClick={() => selectionSort()}
                     >
                     Selection Sort
                 </button>
                 <button
                     className="quick-sort"
                     aria-label="Quick Sort"
-                    onClick={() => dispatch(quickSort())}
+                    onClick={() => quickSort()}
                     >
                     Quick Sort
                 </button>
                 <button
                     className="merge-sort"
                     aria-label="Merge Sort"
-                    onClick={() => dispatch(mergeSort())}
+                    onClick={() => mergeSort()}
                     >
                     Merge Sort
                 </button>
             </div>
         </footer>
     );
+}
+
+
+export function selectionSort(){
+
+}
+
+export function quickSort(){
+
+}
+
+export function mergeSort(){
+
 }

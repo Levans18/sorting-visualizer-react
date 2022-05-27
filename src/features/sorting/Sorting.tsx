@@ -15,7 +15,7 @@ export function Sorting() {
 
     return (
         <div className="sorting-area">
-            <ul className="column-container">
+            <ul className="column-container" id="column-container">
                 {array.map((number, index) => (
                     <li 
                     className="column" 

@@ -38,14 +38,7 @@ export const sortingSlice = createSlice({
         },
 
         updateArray: (state, action) => {
-            let seconds = 0;
-            setInterval(() => {
-                if(seconds == 1){
-                  state.array = action.payload;
-                  clearInterval();
-                }
-                seconds += 1;
-            }, 1000)
+            state.array = action.payload;
          },
     }
 });

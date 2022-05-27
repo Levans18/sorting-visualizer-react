@@ -19,3 +19,7 @@ input{
     margin: 50px;
     width: 200px
 }
+
+.red{
+    background-color: red;
+}

@@ -1,4 +1,5 @@
 
+import { wait } from '@testing-library/user-event/dist/types/utils';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { store } from '../../app/store';
 import {
@@ -14,7 +15,9 @@ export function Footer() {
     const array = useAppSelector(selectArray);
     const dispatch = useAppDispatch();
 
-    async function bubbleSort(){
+    function bubbleSort(){
+        let screenColumns = document.getElementsByClassName("column");
+
         let tempArray: any = [];
         for(let i = 0; i < array.length; i++){
             tempArray[i] = array[i];
@@ -26,7 +29,9 @@ export function Footer() {
                     tempArray[j] = tempArray[j + 1];
                     tempArray[j + 1] = tmp;
                     let updateArr = [...tempArray]
-                    dispatch(updateArray(updateArr))
+                    setTimeout(() => {
+                        dispatch(updateArray(updateArr))
+                    }, 2000)
                 }
             }
         }

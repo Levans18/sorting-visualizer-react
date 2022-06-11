@@ -1,11 +1,14 @@
 
 import { wait } from '@testing-library/user-event/dist/types/utils';
+import { cp } from 'fs/promises';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { store } from '../../app/store';
 import {
     newArray,
+    selectArrayColors,
     selectArray,
     sizeChange,
+    colorChange,
     updateArray,
 } from '../sorting/sortingSlice';
 import './Footer.css';
@@ -15,25 +18,53 @@ export function Footer() {
     const array = useAppSelector(selectArray);
     const dispatch = useAppDispatch();
 
-    function bubbleSort(){
-        let screenColumns = document.getElementsByClassName("column");
 
+    async function bubbleSort(): Promise<void>{
+        
+        function colorArrayUpdate(i:number,j:number){
+            let colorArr = [];
+            for (let k = 0; k < i; k++){
+                colorArr[array.length - 1 - k] = "green";
+            }
+            if(i < array.length-2){
+                colorArr[j] = "red";
+                colorArr[j+1] = "red"
+            }else{
+                colorArr[j] = "green";
+                colorArr[j+1] = "green"
+            }
+            dispatch(colorChange(colorArr));
+        }
+         
+        async function traverseArray(arr:any, i:number){
+                for (let j = 0; j < array.length - i -1; j++) {
+                    colorArrayUpdate(i,j);
+                    await swapValues(arr, i, j);
+                }
+                return new Promise(resolve => {
+                  resolve('resolved');
+                });
+        }
+        function swapValues(arr:any ,i:number , j:number){
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    if (arr[j] > arr[j + 1]) {
+                        let tmp:any = arr[j];
+                        arr[j] = arr[j + 1];
+                        arr[j + 1] = tmp;
+                        let updateArr = [...arr]
+                        dispatch(updateArray(updateArr));
+                    }
+                    resolve('resolved');
+                }, 100);
+              });
+        }
         let tempArray: any = [];
         for(let i = 0; i < array.length; i++){
             tempArray[i] = array[i];
         }
         for (let i = 0; i < array.length; i++) {
-            for (let j = 0; j < array.length; j++) {
-                if (tempArray[j] > tempArray[j + 1]) {
-                    let tmp:any = tempArray[j];
-                    tempArray[j] = tempArray[j + 1];
-                    tempArray[j + 1] = tmp;
-                    let updateArr = [...tempArray]
-                    setTimeout(() => {
-                        dispatch(updateArray(updateArr))
-                    }, 2000)
-                }
-            }
+           await traverseArray(tempArray, i)
         }
     }
 

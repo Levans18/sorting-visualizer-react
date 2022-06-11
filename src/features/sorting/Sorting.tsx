@@ -5,6 +5,7 @@ import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import {
     newArray,
     selectArray,
+    selectArrayColors,
 } from './sortingSlice';
 import './Sorting.css'
 
@@ -12,6 +13,7 @@ import './Sorting.css'
 export function Sorting() {
     const array = useAppSelector(selectArray);
     const dispatch = useAppDispatch();
+    const arrayColors = useAppSelector(selectArrayColors);
 
     return (
         <div className="sorting-area">
@@ -19,7 +21,7 @@ export function Sorting() {
                 {array.map((number, index) => (
                     <li 
                     className="column" 
-                    style={{height: ((window.screen.height)/array.length)*(number/1.4)+'px', width:(window.screen.width - 200) / array.length + 'px'}} 
+                    style={{backgroundColor: arrayColors[index] != null ? arrayColors[index] : "lightskyblue" ,height: ((window.screen.height)/array.length)*(number/1.4)+'px', width:(window.screen.width - 200) / array.length + 'px'}} 
                     key={index}>
                         {array.length < 80 ? number:null}
                     </li>

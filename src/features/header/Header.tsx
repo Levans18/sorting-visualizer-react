@@ -12,11 +12,7 @@ export function Header(){
             <h1>
                 Sorting Visualizer
             </h1>
-            <ul>
-                <li>
-                    Size {array.length}
-                </li>
-            </ul>
+
         </header>
     );
 }

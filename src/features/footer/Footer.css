@@ -6,6 +6,16 @@ footer{
     align-items: center;
 }
 
+label{
+    color: white;
+}
+
+#array-slider, #speed-slider{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .sorting-algorithm-buttons{
     display: flex;
 }
@@ -16,7 +26,6 @@ footer{
 
 
 input{
-    margin: 50px;
     width: 200px
 }
 

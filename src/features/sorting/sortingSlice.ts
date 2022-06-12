@@ -4,8 +4,12 @@ import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { store } from '../../app/store';
 
 export interface SortingState {
-    array: Array<number>
-    arrayColors: Array<string>
+    array: Array<number>;
+    arrayColors: Array<string>;
+    sortingSpeed: number;
+    arrayHistory: Array<Array<number>>;
+    arrayColorHistory: Array<Array<string>>;
+    sortingTime: number;
 }
 
 function createArray(max: number){
@@ -22,7 +26,9 @@ export const sortingSlice = createSlice({
     name: 'sorting',
     initialState: {
         array: createArray(100),
+        sortingSpeed: 100,
         sliderValue: 100,
+        sortingTime: 0,
         arrayColors: [],
     },
     reducers: {
@@ -44,11 +50,16 @@ export const sortingSlice = createSlice({
             state.array = createArray(action.payload)
             state.arrayColors = [];
         },
+        speedChange: (state, action) => {
+            state.sortingSpeed = action.payload
+        },
+        
     }
 });
 
 
-export const { newArray, updateArray, colorChange, sizeChange} = sortingSlice.actions;
+export const { newArray, updateArray, colorChange, sizeChange, speedChange} = sortingSlice.actions;
 export const selectArray = (state: RootState) => state.sorting.array;
+export const selectSortSpeed = (state: RootState) => state.sorting.sortingSpeed;
 export const selectArrayColors = (state: RootState) => state.sorting.arrayColors;
 export default sortingSlice.reducer

@@ -25,9 +25,9 @@ function createArray(max: number){
 export const sortingSlice = createSlice({
     name: 'sorting',
     initialState: {
-        array: createArray(100),
-        sortingSpeed: 100,
-        sliderValue: 100,
+        array: createArray(50),
+        sortingSpeed: 50,
+        sliderValue: 50,
         sortingTime: 0,
         arrayColors: [],
     },

@@ -17,10 +17,29 @@ import './Footer.css';
 
 export function Footer() {
     const state = store.getState()
+    const arrayColors = useAppSelector(selectArrayColors);
     const sortSpeed = useAppSelector(selectSortSpeed);
     const array = useAppSelector(selectArray);
     const dispatch = useAppDispatch();
 
+    async function finishedSorting(){
+        function singleColumnChange(step: number){
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    let newArrayColors = [];
+                    for(let i = 0; i < array.length; i++){
+                        newArrayColors[i] = arrayColors[i];
+                    }
+                    newArrayColors[step] = "lime";
+                    dispatch(colorChange(newArrayColors));
+                    resolve('resolved');
+                }, 1000/(sortSpeed));
+            });
+        }
+        for(let i = 0; i < array.length; i++){
+            await singleColumnChange(i);
+        }
+    }
 
     async function bubbleSort(): Promise<void>{
         
@@ -69,6 +88,7 @@ export function Footer() {
         for (let i = 0; i < array.length; i++) {
            await bubbleTraverseArray(tempArray, i)
         }
+        finishedSorting();
     }
 
     
@@ -89,36 +109,47 @@ export function Footer() {
 
         async function selectionTraverseArray(arr:any, i:number){
             let max:any;
-            for (let j = 0; j < array.length - i -1; j++) {
+            for (let j = 0; j < array.length - i; j++) {
                 selectionColorUpdate(i,j);
-                max = await selectionMaxFinder(arr, i, j, max);
+                max = await selectionMaxFinder(arr, j, max);
             }
             return new Promise(resolve => {
-              resolve('resolved');
+              resolve(max);
             });
         }
-    function selectionMaxFinder(arr:any ,i:number , j:number, max:number){
-        return new Promise(resolve => {
-            setTimeout(() => {
-                if (arr[j] > arr[j + 1]) {
-                    let tmp:any = arr[j];
-                    arr[j] = arr[j + 1];
-                    arr[j + 1] = tmp;
-                    let updateArr = [...arr]
-                    dispatch(updateArray(updateArr));
+
+        function selectionMaxFinder(arr:any, j:number, maxIndex:number){
+            return new Promise(resolve => {
+                setTimeout(() => {
+                if (arr[j] > arr[maxIndex]) {
+                    max = j;
                 }
                 resolve(max);
             }, 1000/(sortSpeed));
           });
         }
-        let max: any = 0;
+
+        function selectionArrayUpdate(arr:any, maxIndex:number, step:number){
+            let max:Array<number> = [];
+            console.log(maxIndex);
+            max = arr.splice(maxIndex, 1)
+            arr.splice(arr.length-step, 0, max[0]);
+            let updateArr = [...arr]
+            dispatch(updateArray(updateArr));
+            return(arr);
+        }
+
+        let max: any;
         let tempArray: any = [];
         for(let i = 0; i < array.length; i++){
             tempArray[i] = array[i];
         }
         for (let i = 0; i < array.length; i++) {
-           await selectionTraverseArray(tempArray, i)
+            max = 0;
+            max = await selectionTraverseArray(tempArray, i)
+            tempArray = selectionArrayUpdate(tempArray, max, i);
         }
+        finishedSorting();
     }
 
     return(
@@ -147,7 +178,7 @@ export function Footer() {
                 <input 
                     type="range" 
                     min="1" 
-                    max="1000" 
+                    max="200" 
                     className="slider" 
                     onInput={(e: React.ChangeEvent<HTMLInputElement>) => dispatch(speedChange(parseInt(e.target.value)))}
                     >

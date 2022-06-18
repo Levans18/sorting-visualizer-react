@@ -26,10 +26,11 @@ export const sortingSlice = createSlice({
     name: 'sorting',
     initialState: {
         array: createArray(50),
-        sortingSpeed: 50,
         sliderValue: 50,
         sortingTime: 0,
         arrayColors: [],
+        arrayHistory: [],
+        arrayColorHistory: [],
     },
     reducers: {
         newArray: (state) => {
@@ -42,6 +43,10 @@ export const sortingSlice = createSlice({
             state.arrayColors = [];
          },
 
+        resetArray: (state) => {
+            state.array = state.arrayHistory[0];
+        },
+
         colorChange: (state, action) => {
             state.arrayColors = action.payload;
          },
@@ -50,16 +55,13 @@ export const sortingSlice = createSlice({
             state.array = createArray(action.payload)
             state.arrayColors = [];
         },
-        speedChange: (state, action) => {
-            state.sortingSpeed = action.payload
-        },
-        
     }
 });
 
 
-export const { newArray, updateArray, colorChange, sizeChange, speedChange} = sortingSlice.actions;
+export const { newArray, updateArray, colorChange, sizeChange, resetArray} = sortingSlice.actions;
 export const selectArray = (state: RootState) => state.sorting.array;
-export const selectSortSpeed = (state: RootState) => state.sorting.sortingSpeed;
 export const selectArrayColors = (state: RootState) => state.sorting.arrayColors;
+export const selectArrayHistory = (state: RootState) => state.sorting.arrayHistory;
+export const selectArrayColorHistory = (state: RootState) => state.sorting.arrayColorHistory;
 export default sortingSlice.reducer

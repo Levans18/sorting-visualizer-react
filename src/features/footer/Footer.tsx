@@ -5,39 +5,42 @@ import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { store } from '../../app/store';
 import {
     newArray,
+    updateArray,
+    resetArray,
     selectArrayColors,
     selectArray,
-    selectSortSpeed,
+    selectArrayHistory,
+    selectArrayColorHistory,
     sizeChange,
-    speedChange,
     colorChange,
-    updateArray,
 } from '../sorting/sortingSlice';
 import './Footer.css';
 
 export function Footer() {
     const state = store.getState()
     const arrayColors = useAppSelector(selectArrayColors);
-    const sortSpeed = useAppSelector(selectSortSpeed);
+    const arrayHistory = useAppSelector(selectArrayHistory);
+    const arrayColorHistory = useAppSelector(selectArrayColorHistory)
     const array = useAppSelector(selectArray);
     const dispatch = useAppDispatch();
 
     async function finishedSorting(){
-        function singleColumnChange(step: number){
+        function singleColumnChange(step: number, newArrayColors: Array<string>){
             return new Promise(resolve => {
                 setTimeout(() => {
-                    let newArrayColors = [];
-                    for(let i = 0; i < array.length; i++){
-                        newArrayColors[i] = arrayColors[i];
-                    }
                     newArrayColors[step] = "lime";
                     dispatch(colorChange(newArrayColors));
-                    resolve('resolved');
-                }, 1000/(sortSpeed));
+                    resolve(newArrayColors);
+                }, array.length > 80 ? 1000/(array.length) : 1000/(array.length/8) );
             });
         }
         for(let i = 0; i < array.length; i++){
-            await singleColumnChange(i);
+            let newArrayColors:Array<string> = [];
+            for(let i = 0; i < array.length-1; i++){
+                newArrayColors[i] = arrayColors[i];
+                console.log(arrayColors.length);
+            }
+            await singleColumnChange(i, newArrayColors);
         }
     }
 
@@ -78,20 +81,18 @@ export function Footer() {
                         dispatch(updateArray(updateArr));
                     }
                     resolve('resolved');
-                }, 1000/(sortSpeed));
+                }, array.length > 80 ? 1000/(array.length) : 1000/(array.length/4) );
               });
         }
-        let tempArray: any = [];
+        let newArray: any = [];
         for(let i = 0; i < array.length; i++){
-            tempArray[i] = array[i];
+            newArray[i] = array[i];
         }
         for (let i = 0; i < array.length; i++) {
-           await bubbleTraverseArray(tempArray, i)
+           await bubbleTraverseArray(newArray, i)
         }
-        finishedSorting();
     }
 
-    
     async function selectionSort(){
         
         function selectionColorUpdate(i:number,j:number){
@@ -125,7 +126,7 @@ export function Footer() {
                     max = j;
                 }
                 resolve(max);
-            }, 1000/(sortSpeed));
+            }, array.length > 80 ? 1000/(array.length) : 1000/(array.length/8) );
           });
         }
 
@@ -152,6 +153,40 @@ export function Footer() {
         finishedSorting();
     }
 
+    async function quickSort(){
+        
+        function quickSortAlgorithm(arr: Array<number>): any{
+            if (arr.length <= 1) {
+                return arr;
+              }
+            
+              var pivot = arr[0];
+              
+              let left = []; 
+              let right = [];
+            
+              for (let i = 1; i < arr.length; i++) {
+                
+                arr[i] < pivot ? left.push(arr[i]) : right.push(arr[i]);
+              }
+            
+              return quickSortAlgorithm(left).concat(pivot, quickSortAlgorithm(right));
+        }
+        
+        function quickStuff(){
+            
+        }
+
+
+        let newArray: Array<number> = [];
+        for(let i = 0; i < array.length; i++){
+            newArray[i] = array[i];
+        }
+    
+        let sorted = quickSortAlgorithm(newArray);
+        dispatch(updateArray(sorted));
+    }
+
     return(
         <footer>
             <button
@@ -166,24 +201,12 @@ export function Footer() {
                 <input 
                     type="range" 
                     min="10" 
-                    max="200" 
+                    max="100" 
                     className="slider" 
                     onInput={(e: React.ChangeEvent<HTMLInputElement>) => dispatch(sizeChange(parseInt(e.target.value)))}
                     >
                 </input>
                 <label>Array Size</label>
-            </div>
-            <div id = "speed-slider">
-                <label>{sortSpeed}</label>
-                <input 
-                    type="range" 
-                    min="1" 
-                    max="200" 
-                    className="slider" 
-                    onInput={(e: React.ChangeEvent<HTMLInputElement>) => dispatch(speedChange(parseInt(e.target.value)))}
-                    >
-                </input>
-                <label>Sorting Speed</label>
             </div>
             <div className="sorting-algorithm-buttons">
                 <button
@@ -217,10 +240,6 @@ export function Footer() {
             </div>
         </footer>
     );
-}
-
-export function quickSort(){
-
 }
 
 export function mergeSort(){

@@ -12,7 +12,6 @@ export function Header(){
             <h1>
                 Sorting Visualizer
             </h1>
-
         </header>
     );
 }

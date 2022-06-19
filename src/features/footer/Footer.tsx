@@ -279,7 +279,6 @@ export function Footer() {
                 for(let i = 0; i < array.length; i++){
                     newArray[i] = sorted[i];
                 }
-                
                 dispatch(updateArray(newArray));
                 mergeColorUpdate(leftStart);
                 //Merge the sub arrays
@@ -300,7 +299,6 @@ export function Footer() {
          */
         async function merge(left:number, right:number, leftLimit:number, rightLimit:number, sorted:Array<number>, buffer:Array<number>){
             let i = left;
-            await stepTimeout();
             
             //Compare the two sub arrays and merge them in the sorted order
             while (left < leftLimit && right < rightLimit) {
@@ -309,6 +307,8 @@ export function Footer() {
               } else {
                 buffer[i++] = sorted[right++];
               }
+              mergeColorUpdate(i);
+              await stepTimeout();
             }
           
             //If there are elements in the left sub arrray then add it to the result
@@ -328,7 +328,6 @@ export function Footer() {
             if(left < array.length-1){
                 colorArr[left] = "red";
             }
-            
             dispatch(colorChange(colorArr));
         }
 
@@ -358,7 +357,7 @@ export function Footer() {
                 <input 
                     type="range" 
                     min="10" 
-                    max="100" 
+                    max="500" 
                     className="slider" 
                     onInput={(e: React.ChangeEvent<HTMLInputElement>) => dispatch(sizeChange(parseInt(e.target.value)))}
                     >

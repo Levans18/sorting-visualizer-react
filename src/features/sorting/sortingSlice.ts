@@ -40,7 +40,6 @@ export const sortingSlice = createSlice({
 
         updateArray: (state, action) => {
             state.array = action.payload;
-            state.arrayColors = [];
          },
 
         resetArray: (state) => {
@@ -53,7 +52,7 @@ export const sortingSlice = createSlice({
         
         sizeChange: (state, action) => {
             state.array = createArray(action.payload)
-            state.arrayColors = [];
+
         },
     }
 });

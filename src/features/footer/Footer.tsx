@@ -1,6 +1,8 @@
 
 import { wait } from '@testing-library/user-event/dist/types/utils';
 import { cp } from 'fs/promises';
+import { resolve } from 'node:path/win32';
+import { arrayBuffer } from 'stream/consumers';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { store } from '../../app/store';
 import {
@@ -23,6 +25,14 @@ export function Footer() {
     const arrayColorHistory = useAppSelector(selectArrayColorHistory)
     const array = useAppSelector(selectArray);
     const dispatch = useAppDispatch();
+
+    function stepTimeout(){
+        return new Promise(resolve => {
+            setTimeout(() => {
+            resolve(null);
+        }, array.length > 80 ? 1000/(array.length) : 1000/(array.length/8));
+      });
+    }
 
     async function finishedSorting(){
         function singleColumnChange(step: number, newArrayColors: Array<string>){
@@ -154,27 +164,88 @@ export function Footer() {
     }
 
     async function quickSort(){
-        
-        function quickSortAlgorithm(arr: Array<number>): any{
-            if (arr.length <= 1) {
-                return arr;
-              }
+
+        async function partition(arr: Array<number>, start:number, end:number){
+            // Taking the last element as the pivot
+            const pivotValue = arr[end];
+            let pivotIndex = start; 
+            for (let i = start; i < end; i++) {
+                await stepTimeout();
+                if (arr[i] < pivotValue) {
+                // Swapping elements
+                [arr[i], arr[pivotIndex]] = [arr[pivotIndex], arr[i]];
+                // Moving to next element
+                pivotIndex++;
+                }
+                quickColorUpdate(i,start, end)
+            }
             
-              var pivot = arr[0];
-              
-              let left = []; 
-              let right = [];
-            
-              for (let i = 1; i < arr.length; i++) {
-                
-                arr[i] < pivot ? left.push(arr[i]) : right.push(arr[i]);
-              }
-            
-              return quickSortAlgorithm(left).concat(pivot, quickSortAlgorithm(right));
+            // Putting the pivot value in the middle
+            [arr[pivotIndex], arr[end]] = [arr[end], arr[pivotIndex]] 
+            return new Promise(resolve => {
+                 resolve(pivotIndex);
+            });
         }
-        
-        function quickStuff(){
+
+        async function quickSortAlgorithm(arr: Array<number>){
+            // Creating an array that we'll use as a stack, using the push() and pop() functions
+            let stack: Array<number> = [];
+            let start: number = 0;
+            let end: number = 0;
             
+            // Adding the entire initial array as an "unsorted subarray"
+            stack.push(0);
+            stack.push(arr.length - 1);
+            
+            // There isn't an explicit peek() function
+            // The loop repeats as long as we have unsorted subarrays
+            while(stack[stack.length - 1] >= 0){
+                
+                // Extracting the top unsorted subarray
+                end = stack.pop()!;
+                start = stack.pop()!;
+                let pivotIndex: any = 0;
+                pivotIndex = await partition(arr, start, end);
+                
+                let newArray = [];
+                for(let i = 0; i < array.length; i++){
+                    newArray[i] = arr[i];
+                }
+                dispatch(updateArray(newArray));
+                
+                // If there are unsorted elements to the "left" of the pivot,
+                // we add that subarray to the stack so we can sort it later
+                if (pivotIndex - 1 > start){
+                    stack.push(start);
+                    stack.push(pivotIndex - 1);
+                }
+                
+                // If there are unsorted elements to the "right" of the pivot,
+                // we add that subarray to the stack so we can sort it later
+                if (pivotIndex + 1 < end){
+                    stack.push(pivotIndex + 1);
+                    stack.push(end);
+                }
+            }
+            quickColorUpdate(0,0,0,true);
+            return arr;
+        }
+
+        function quickColorUpdate(step:number, start:number, end:number, finished = false){
+            let colorArr: Array<string> = [];
+            for(let i = 1; i + end < array.length-1; i++){
+                colorArr[i+end+1] = "green";
+                colorArr[i+end] = "green";
+            }
+            if(step < array.length-1){
+                colorArr[step] = "red";
+            }
+            if(finished){
+                for(let j = 0; j < array.length-1; j++){
+                    colorArr[j] = "green"
+                }
+            }
+            dispatch(colorChange(colorArr));
         }
 
 
@@ -183,9 +254,95 @@ export function Footer() {
             newArray[i] = array[i];
         }
     
-        let sorted = quickSortAlgorithm(newArray);
+        let sorted = await quickSortAlgorithm(newArray);
         dispatch(updateArray(sorted));
     }
+
+    async function mergeSort(){
+
+        async function mergeSortAlgorithm(arr :Array<number>) {
+        //Create two arrays for sorting
+        let sorted = Array.from(arr);
+        let n = sorted.length;
+        let buffer = new Array(n);
+  
+        for (let size = 1; size < n; size *= 2) {
+            for (let leftStart = 0; leftStart < n; leftStart += 2*size) {
+      
+                //Get the two sub arrays
+                let left = leftStart,
+                right = Math.min(left + size, n),
+                leftLimit = right,
+                rightLimit = Math.min(right + size, n);
+                let newArray = [];
+
+                for(let i = 0; i < array.length; i++){
+                    newArray[i] = sorted[i];
+                }
+                
+                dispatch(updateArray(newArray));
+                mergeColorUpdate(leftStart);
+                //Merge the sub arrays
+                await merge(left, right, leftLimit, rightLimit, sorted, buffer);
+            }
+        //Swap the sorted sub array and merge them
+        let temp = sorted;
+        sorted = buffer;
+        buffer = temp;
+        }
+        return new Promise(resolve => {
+            resolve(sorted);
+       });
+
+    }
+        /*
+         * Function to merge the two haves arr[l..m] and arr[m+1..r] of array arr
+         */
+        async function merge(left:number, right:number, leftLimit:number, rightLimit:number, sorted:Array<number>, buffer:Array<number>){
+            let i = left;
+            await stepTimeout();
+            
+            //Compare the two sub arrays and merge them in the sorted order
+            while (left < leftLimit && right < rightLimit) {
+              if (sorted[left] <= sorted[right]) {
+                buffer[i++] = sorted[left++];
+              } else {
+                buffer[i++] = sorted[right++];
+              }
+            }
+          
+            //If there are elements in the left sub arrray then add it to the result
+            while (left < leftLimit) {
+              buffer[i++] = sorted[left++];
+            }
+          
+            //If there are elements in the right sub array then add it to the result
+            while (right < rightLimit) {
+              buffer[i++] = sorted[right++];
+            }
+        }
+
+        function mergeColorUpdate(left:number){
+            let colorArr: Array<string> = [];
+
+            if(left < array.length-1){
+                colorArr[left] = "red";
+            }
+            
+            dispatch(colorChange(colorArr));
+        }
+
+        let arr: Array<number> = [];
+        for(let i = 0; i < array.length; i++){
+            arr[i] = array[i];
+        }
+
+        let merged = await mergeSortAlgorithm(arr);
+        dispatch(updateArray(merged));
+        console.log(merged);
+        
+    }
+    
 
     return(
         <footer>
@@ -242,6 +399,3 @@ export function Footer() {
     );
 }
 
-export function mergeSort(){
-
-}

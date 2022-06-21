@@ -262,9 +262,9 @@ export function Footer() {
 
         async function mergeSortAlgorithm(arr :Array<number>) {
         //Create two arrays for sorting
-        let sorted = Array.from(arr);
+        let sorted:any = arr;
         let n = sorted.length;
-        let buffer = new Array(n);
+        let buffer:any = [];
   
         for (let size = 1; size < n; size *= 2) {
             for (let leftStart = 0; leftStart < n; leftStart += 2*size) {
@@ -307,6 +307,9 @@ export function Footer() {
               } else {
                 buffer[i++] = sorted[right++];
               }
+              if(buffer.length == 50){
+                dispatch(updateArray(buffer));
+              }
               mergeColorUpdate(i);
               await stepTimeout();
             }
@@ -338,7 +341,6 @@ export function Footer() {
 
         let merged = await mergeSortAlgorithm(arr);
         dispatch(updateArray(merged));
-        console.log(merged);
         
     }
     

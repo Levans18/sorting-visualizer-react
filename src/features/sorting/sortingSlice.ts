@@ -54,6 +54,7 @@ export const sortingSlice = createSlice({
             state.array = createArray(action.payload)
 
         },
+
     }
 });
 

@@ -307,9 +307,6 @@ export function Footer() {
               } else {
                 buffer[i++] = sorted[right++];
               }
-              if(buffer.length == 50){
-                dispatch(updateArray(buffer));
-              }
               mergeColorUpdate(i);
               await stepTimeout();
             }

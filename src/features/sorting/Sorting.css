@@ -22,7 +22,6 @@ ul{
     display: flex;
     bottom: 80px;
     flex-direction: row;
-    position: absolute;
     justify-content: center;
     align-items: flex-end;
     height: 100%;

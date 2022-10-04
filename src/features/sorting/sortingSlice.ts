@@ -16,7 +16,7 @@ function createArray(max: number){
     let arr = []
     let num = 0;
     for(let i = 0; i < max; i++){
-        num = Math.floor(Math.random() * (max - 2)) + 1;
+        num = Math.floor(Math.random() * (max)) + 1;
         arr.push(num);
     }
     return arr;

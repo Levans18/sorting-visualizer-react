@@ -21,7 +21,7 @@ export function Sorting() {
                 {array.map((number, index) => (
                     <li 
                     className="column" 
-                    style={{backgroundColor: arrayColors[index] != null ? arrayColors[index] : "lightskyblue" ,height: ((window.screen.height)/array.length)*(number/1.4)+'px', width:(window.screen.width - 200) / array.length + 'px'}} 
+                    style={{backgroundColor: arrayColors[index] != null ? arrayColors[index] : "lightskyblue" ,height: "calc(98%/"+array.length+"*"+number+"", width:(window.screen.width - 200) / array.length + 'px'}} 
                     key={index}>
                         {array.length < 80 ? number:null}
                     </li>

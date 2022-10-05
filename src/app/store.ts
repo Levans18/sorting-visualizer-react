@@ -1,5 +1,5 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
-import sortingReducer from '../features/sorting/sortingSlice';
+import sortingReducer from '../features/SortingArea/sorting/sortingSlice';
 
 export const store = configureStore({
   reducer: {

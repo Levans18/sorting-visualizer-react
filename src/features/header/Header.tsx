@@ -1,9 +1,8 @@
 import React from 'react';
 import { store } from '../../app/store';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import { selectArray } from '../sorting/sortingSlice';
+import { selectArray } from '../SortingArea/sorting/sortingSlice';
 import './Header.css';
-
 export function Header(){
     const array = useAppSelector(selectArray);
     

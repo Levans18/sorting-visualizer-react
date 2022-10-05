@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sorting } from './features/sorting/Sorting';
+import { SortingArea } from './features/SortingArea/SortingArea';
 import { Header } from './features/header/Header';
 import { Footer } from './features/footer/Footer'
 import './App.css';
@@ -8,7 +8,7 @@ function App() {
   return (
     <div className="App">
       <Header />
-      <Sorting />
+      <SortingArea />
       <Footer />
     </div>
   );

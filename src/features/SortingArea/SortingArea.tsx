@@ -6,11 +6,11 @@ import {
     newArray,
     selectArray,
     selectArrayColors,
-} from './sortingSlice';
-import './Sorting.css'
+} from './sorting/sortingSlice';
+import './SortingArea.css'
 
 
-export function Sorting() {
+export function SortingArea() {
     const array = useAppSelector(selectArray);
     const dispatch = useAppDispatch();
     const arrayColors = useAppSelector(selectArrayColors);

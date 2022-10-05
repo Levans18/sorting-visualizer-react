@@ -3,6 +3,10 @@ import { wait } from '@testing-library/user-event/dist/types/utils';
 import { cp } from 'fs/promises';
 import { resolve } from 'node:path/win32';
 import { arrayBuffer } from 'stream/consumers';
+import SplitButton from '../Components/mat-ui-button'
+import Slider from '@mui/material/Slider'
+import Button from "@mui/material/Button";
+import ButtonGroup from "@mui/material/ButtonGroup";
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { store } from '../../app/store';
 import {
@@ -15,7 +19,7 @@ import {
     selectArrayColorHistory,
     sizeChange,
     colorChange,
-} from '../sorting/sortingSlice';
+} from '../SortingArea/sorting/sortingSlice';
 import './Footer.css';
 
 export function Footer() {
@@ -362,55 +366,66 @@ export function Footer() {
 
     return(
         <footer>
-            <button
-                className="new-array"
-                aria-label="New Array"
-                onClick={() => dispatch(newArray())}
-                >
-                New Array
-            </button>
-            <div id = "array-slider">
-            <label>{array.length}</label>
-                <input 
-                    type="range" 
-                    min="10" 
-                    max="500" 
-                    className="slider" 
-                    onInput={(e: React.ChangeEvent<HTMLInputElement>) => dispatch(sizeChange(parseInt(e.target.value)))}
+            <div className="array-modifier-container">
+                <Button 
+                    variant="contained"
+                    className="new-array-button"
+                    aria-label="New Array Button"
+                    onClick={() => dispatch(newArray())}
                     >
-                </input>
-                <label>Array Size</label>
+                    New Array
+                </Button>
+                <div className="array-size-slider">
+                    <label>{array.length}</label>
+                        <input 
+                            type="range" 
+                            min="10" 
+                            max="500" 
+                            className="slider" 
+                            onInput={(e: React.ChangeEvent<HTMLInputElement>) => dispatch(sizeChange(parseInt(e.target.value)))}
+                            >
+                        </input>
+                    <label>Array Size</label>
+                </div>
             </div>
-            <div className="sorting-algorithm-buttons">
-                <button
+            <ButtonGroup className="sorting-algorithm-buttons">
+                 <Button
+                    variant="contained"
+                    color="info"
                     className="bubble-sort"
                     aria-label="Bubble Sort"
                     onClick={() => bubbleSort()}
                     >
                     Bubble Sort
-                </button>
-                <button
+                </Button>
+                <Button
+                    variant="contained"
+                    color="success"
                     className="selection-sort"
                     aria-label="Selection Sort"
                     onClick={() => selectionSort()}
                     >
                     Selection Sort
-                </button>
-                <button
+                </Button>
+                <Button
+                    variant='contained'
+                    color='secondary'
                     className="quick-sort"
                     aria-label="Quick Sort"
                     onClick={() => quickSort()}
                     >
                     Quick Sort
-                </button>
-                <button
+                </Button>
+                <Button
+                    variant="contained"
+                    color='warning'
                     className="merge-sort"
                     aria-label="Merge Sort"
                     onClick={() => mergeSort()}
                     >
                     Merge Sort
-                </button>
-            </div>
+                </Button> 
+            </ButtonGroup>
         </footer>
     );
 }

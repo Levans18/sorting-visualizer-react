@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState, AppThunk } from '../../app/store';
-import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import { store } from '../../app/store';
+import { RootState, AppThunk } from '../../../app/store';
+import { useAppSelector, useAppDispatch } from '../../../app/hooks';
+import { store } from '../../../app/store';
 
 export interface SortingState {
     array: Array<number>;
@@ -52,7 +52,7 @@ export const sortingSlice = createSlice({
         
         sizeChange: (state, action) => {
             state.array = createArray(action.payload)
-
+            state.arrayColors = [];
         },
 
     }

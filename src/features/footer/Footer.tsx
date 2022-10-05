@@ -38,20 +38,30 @@ export function Footer() {
         function singleColumnChange(step: number, newArrayColors: Array<string>){
             return new Promise(resolve => {
                 setTimeout(() => {
-                    newArrayColors[step] = "lime";
+                    for(let i = 0; i <= array.length; i++){
+                        if(i <= step){
+                            newArrayColors[i] = "lime";
+                        } else {
+                            newArrayColors[i] = "green";
+                        }
+                    }
                     dispatch(colorChange(newArrayColors));
                     resolve(newArrayColors);
-                }, array.length > 80 ? 1000/(array.length) : 1000/(array.length/8) );
+                },  1000/(array.length) );
             });
         }
         for(let i = 0; i < array.length; i++){
             let newArrayColors:Array<string> = [];
-            for(let i = 0; i < array.length-1; i++){
-                newArrayColors[i] = arrayColors[i];
-                console.log(arrayColors.length);
+            for(let j = 0; j < array.length-1; j++){
+                newArrayColors[j] = arrayColors[j];
             }
             await singleColumnChange(i, newArrayColors);
         }
+        let purpleArray:Array<string> = [];
+        for(let i = 0; i <= array.length; i++){
+            purpleArray[i] = "purple";
+        }
+        dispatch(colorChange(purpleArray));
     }
 
     async function bubbleSort(): Promise<void>{
@@ -101,6 +111,7 @@ export function Footer() {
         for (let i = 0; i < array.length; i++) {
            await bubbleTraverseArray(newArray, i)
         }
+        finishedSorting();
     }
 
     async function selectionSort(){
@@ -229,6 +240,7 @@ export function Footer() {
             }
             quickColorUpdate(0,0,0,true);
             return arr;
+            
         }
 
         function quickColorUpdate(step:number, start:number, end:number, finished = false){
@@ -256,6 +268,7 @@ export function Footer() {
     
         let sorted = await quickSortAlgorithm(newArray);
         dispatch(updateArray(sorted));
+        finishedSorting();
     }
 
     async function mergeSort(){
@@ -307,6 +320,11 @@ export function Footer() {
               } else {
                 buffer[i++] = sorted[right++];
               }
+              let newArray = [];
+              for(let i = 0; i < array.length; i++){
+                newArray[i] = sorted[i];
+              }
+              dispatch(updateArray(newArray));
               mergeColorUpdate(i);
               await stepTimeout();
             }
@@ -338,7 +356,7 @@ export function Footer() {
 
         let merged = await mergeSortAlgorithm(arr);
         dispatch(updateArray(merged));
-        
+        finishedSorting();
     }
     
 

@@ -1,10 +1,6 @@
-
-import { wait } from '@testing-library/user-event/dist/types/utils';
-import { cp } from 'fs/promises';
-import { resolve } from 'node:path/win32';
-import { arrayBuffer } from 'stream/consumers';
 import SplitButton from '../Components/mat-ui-button'
 import Slider from '@mui/material/Slider'
+import { useState } from 'react'
 import Button from "@mui/material/Button";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
@@ -29,6 +25,8 @@ export function Footer() {
     const arrayColorHistory = useAppSelector(selectArrayColorHistory)
     const array = useAppSelector(selectArray);
     const dispatch = useAppDispatch();
+
+    const [disable, setDisable] = useState([false, false, false, false]);
 
     function stepTimeout(){
         return new Promise(resolve => {
@@ -69,7 +67,7 @@ export function Footer() {
     }
 
     async function bubbleSort(): Promise<void>{
-        
+        setDisable([false, true, true, true]);
         function bubbleColorUpdate(i:number,j:number){
             let colorArr = [];
             for (let k = 0; k < i; k++){
@@ -119,7 +117,7 @@ export function Footer() {
     }
 
     async function selectionSort(){
-        
+        setDisable([true, false, true, true]);
         function selectionColorUpdate(i:number,j:number){
             let colorArr = [];
             for (let k = 0; k < i; k++){
@@ -179,7 +177,7 @@ export function Footer() {
     }
 
     async function quickSort(){
-
+        setDisable([true, true, false, true]);
         async function partition(arr: Array<number>, start:number, end:number){
             // Taking the last element as the pivot
             const pivotValue = arr[end];
@@ -276,7 +274,7 @@ export function Footer() {
     }
 
     async function mergeSort(){
-
+        setDisable([true, true, true, false]);
         async function mergeSortAlgorithm(arr :Array<number>) {
         //Create two arrays for sorting
         let sorted:any = arr;
@@ -390,6 +388,7 @@ export function Footer() {
             </div>
             <ButtonGroup className="sorting-algorithm-buttons">
                  <Button
+                    disabled={disable[0]}
                     variant="contained"
                     color="info"
                     className="bubble-sort"
@@ -399,6 +398,7 @@ export function Footer() {
                     Bubble Sort
                 </Button>
                 <Button
+                    disabled={disable[1]}
                     variant="contained"
                     color="success"
                     className="selection-sort"
@@ -408,6 +408,7 @@ export function Footer() {
                     Selection Sort
                 </Button>
                 <Button
+                    disabled={disable[2]}
                     variant='contained'
                     color='secondary'
                     className="quick-sort"
@@ -417,6 +418,7 @@ export function Footer() {
                     Quick Sort
                 </Button>
                 <Button
+                    disabled={disable[3]}
                     variant="contained"
                     color='warning'
                     className="merge-sort"

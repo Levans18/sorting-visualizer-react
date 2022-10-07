@@ -47,3 +47,7 @@ input{
 .new-array-button{
     height: 40px;
 }
+
+.no-click {
+    pointer-events: none;
+}

@@ -1,0 +1,10 @@
+@keyframes openSettings {
+    0% {transform:rotate(0deg);}
+    100% {transform:rotate(90deg);}
+}
+
+.openSettings-transition {
+  -ms-transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  transform: rotate(45deg);
+}

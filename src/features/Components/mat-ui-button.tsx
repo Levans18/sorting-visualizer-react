@@ -8,7 +8,6 @@ import Paper from '@mui/material/Paper';
 import Popper from '@mui/material/Popper';
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
-import  { bubbleSort }  from '../SortingArea/sorting/sorting';
 
 
 const options = ['Bubble Sort', 'Selection Sort', 'Quick Sort', 'Merge Sort'];
@@ -20,7 +19,6 @@ export default function SplitButton() {
 
   const handleClick = () => {
     if(selectedIndex === 1){
-      bubbleSort();
     }
     console.info(`You clicked ${options[selectedIndex]}`);
   };

@@ -18,3 +18,7 @@ ul{
     list-style: none;
     margin-right: 5px;
 }
+
+.header-option-container{
+    margin-right: 10px;
+}

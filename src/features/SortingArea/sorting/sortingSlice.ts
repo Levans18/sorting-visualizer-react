@@ -6,7 +6,7 @@ import { store } from '../../../app/store';
 export interface SortingState {
     array: Array<number>;
     arrayColors: Array<string>;
-    sortingSpeed: number;
+    stopSort: boolean;
     arrayHistory: Array<Array<number>>;
     arrayColorHistory: Array<Array<string>>;
     sortingTime: number;
@@ -27,7 +27,7 @@ export const sortingSlice = createSlice({
     initialState: {
         array: createArray(250),
         sliderValue: 250,
-        sortingTime: 0,
+        stopSort: false,
         arrayColors: [],
         arrayHistory: [],
         arrayColorHistory: [],
@@ -36,6 +36,7 @@ export const sortingSlice = createSlice({
         newArray: (state) => {
             state.array = createArray(state.array.length);
             state.arrayColors = [];
+            state.stopSort = true;
         },
 
         updateArray: (state, action) => {
@@ -54,13 +55,13 @@ export const sortingSlice = createSlice({
             state.array = createArray(action.payload)
             state.arrayColors = [];
         },
-
     }
 });
 
 
 export const { newArray, updateArray, colorChange, sizeChange, resetArray} = sortingSlice.actions;
 export const selectArray = (state: RootState) => state.sorting.array;
+export const selectStopSort = (state: RootState) => state.sorting.stopSort;
 export const selectArrayColors = (state: RootState) => state.sorting.arrayColors;
 export const selectArrayHistory = (state: RootState) => state.sorting.arrayHistory;
 export const selectArrayColorHistory = (state: RootState) => state.sorting.arrayColorHistory;

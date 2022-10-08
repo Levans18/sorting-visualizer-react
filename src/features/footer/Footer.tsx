@@ -5,28 +5,30 @@ import Button from "@mui/material/Button";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { store } from '../../app/store';
+import { useEffect } from 'react';
 import {
     newArray,
     updateArray,
     resetArray,
     selectArrayColors,
     selectArray,
-    selectArrayHistory,
-    selectArrayColorHistory,
     sizeChange,
     colorChange,
+    selectStopSort,
 } from '../SortingArea/sorting/sortingSlice';
 import './Footer.css';
+import { info } from 'console';
+import { setUncaughtExceptionCaptureCallback } from 'process';
 
 export function Footer() {
     const state = store.getState()
     const arrayColors = useAppSelector(selectArrayColors);
-    const arrayHistory = useAppSelector(selectArrayHistory);
-    const arrayColorHistory = useAppSelector(selectArrayColorHistory)
     const array = useAppSelector(selectArray);
     const dispatch = useAppDispatch();
+    let aController = new AbortController();
 
     const [disable, setDisable] = useState([false, false, false, false]);
+    const [stopSort, setStopSort] = useState(false); 
 
     function stepTimeout(){
         return new Promise(resolve => {
@@ -67,6 +69,7 @@ export function Footer() {
     }
 
     async function bubbleSort(): Promise<void>{
+        let signal = aController.signal;
         setDisable([false, true, true, true]);
         function bubbleColorUpdate(i:number,j:number){
             let colorArr = [];
@@ -83,15 +86,7 @@ export function Footer() {
             dispatch(colorChange(colorArr));
         }
          
-        async function bubbleTraverseArray(arr:any, i:number){
-                for (let j = 0; j < array.length - i -1; j++) {
-                    bubbleColorUpdate(i,j);
-                    await bubbleSwapValues(arr, i, j);
-                }
-                return new Promise(resolve => {
-                  resolve('resolved');
-                });
-        }
+
         function bubbleSwapValues(arr:any ,i:number , j:number){
             return new Promise(resolve => {
                 setTimeout(() => {
@@ -103,15 +98,23 @@ export function Footer() {
                         dispatch(updateArray(updateArr));
                     }
                     resolve('resolved');
-                }, array.length > 80 ? 1000/(array.length) : 1000/(array.length/4) );
+                }, array.length >80 ? 1000/(array.length) : 1000/(array.length/4) );
               });
         }
         let newArray: any = [];
         for(let i = 0; i < array.length; i++){
             newArray[i] = array[i];
         }
+
         for (let i = 0; i < array.length; i++) {
-           await bubbleTraverseArray(newArray, i)
+            for (let j = 0; j < array.length - i -1; j++) {
+                console.log(signal);
+                if (signal.aborted){
+                    return;
+                 }
+                bubbleColorUpdate(i,j);
+                await bubbleSwapValues(newArray, i, j);
+            }
         }
         finishedSorting();
     }
@@ -149,7 +152,7 @@ export function Footer() {
                     max = j;
                 }
                 resolve(max);
-            }, array.length > 80 ? 1000/(array.length) : 1000/(array.length/8) );
+            }, array.length >80 ? 1000/(array.length) : 1000/(array.length/8) );
           });
         }
 
@@ -361,6 +364,10 @@ export function Footer() {
         finishedSorting();
     }
     
+    function ResetDisable(){
+        setDisable([false,false,false,false]);
+        setStopSort(true);
+    }
 
     return(
         <footer>
@@ -369,7 +376,7 @@ export function Footer() {
                     variant="contained"
                     className="new-array-button"
                     aria-label="New Array Button"
-                    onClick={() => dispatch(newArray())}
+                    onClick={() => {ResetDisable(); dispatch(newArray())}}
                     >
                     New Array
                 </Button>

@@ -10,7 +10,7 @@ export function SettingsButton(){
     function toggleSettings(){
         setOpen(!open);
         if(open){
-            console.log("should be working");
+            $(".settings-button-icon").addClass("openSettings-transition")
         }else{
             console.log("doesn't work");
         }

@@ -2,13 +2,14 @@
 header{
     height: 60px;
     display: flex;
-    background-color: #242333;
+    background-color: #293241;
     color: white;
     justify-content: space-between; 
     align-items: center;
 }
 
 h1{
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
     font-size: 2rem;
     padding: 0;
     margin-left: 10px;

@@ -23,7 +23,7 @@ export function SortingArea() {
                     className="column" 
                     style={{backgroundColor: arrayColors[index] != null ? arrayColors[index] : "lightskyblue" ,height: "calc(98%/"+array.length+"*"+number+"", width:(window.screen.width - 200) / array.length + 'px'}} 
                     key={index}>
-                        {array.length < 80 ? number:null}
+                        {array.length < 70 ? number:null}
                     </li>
                 ))}
             </ul>

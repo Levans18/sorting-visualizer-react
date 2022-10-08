@@ -4,7 +4,6 @@
 }
 
 .openSettings-transition {
-  -ms-transform: rotate(45deg);
-  -webkit-transform: rotate(45deg);
-  transform: rotate(45deg);
+  animation-name: "openSettings";
+  animation-duration: 5s;
 }

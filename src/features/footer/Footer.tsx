@@ -2,7 +2,6 @@ import { useState } from 'react'
 import Button from "@mui/material/Button";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import { store } from '../../app/store';
 import {
     newArray,
     updateArray,
@@ -21,9 +20,11 @@ export function Footer() {
 
     const [disable, setDisable] = useState([false, false, false, false]);
 
+    /*Bubble Sort Algorithm*/
     async function bubbleSort(): Promise<void>{
 
-        setDisable([false, true, true, true]);
+        /*Disable all buttons but disable*/
+        DisableButtons("bubble-sort");
 
         function bubbleColorUpdate(i:number,j:number){
             let colorArr = [];
@@ -69,7 +70,9 @@ export function Footer() {
     }
 
     async function selectionSort(){
-        setDisable([true, false, true, true]);
+
+        DisableButtons("selection-sort");
+
         function selectionColorUpdate(i:number,j:number){
             let colorArr = [];
             for (let k = 0; k < i; k++){
@@ -109,7 +112,6 @@ export function Footer() {
 
         function selectionArrayUpdate(arr:any, maxIndex:number, step:number){
             let max:Array<number> = [];
-            console.log(maxIndex);
             max = arr.splice(maxIndex, 1)
             arr.splice(arr.length-step, 0, max[0]);
             let updateArr = [...arr]
@@ -130,7 +132,7 @@ export function Footer() {
 
     async function quickSort(){
 
-        setDisable([true, true, false, true]);
+        DisableButtons("quick-sort");
 
         async function partition(arr: Array<number>, start:number, end:number){
             // Taking the last element as the pivot
@@ -228,7 +230,9 @@ export function Footer() {
     }
 
     async function mergeSort(){
-        setDisable([true, true, true, false]);
+
+        DisableButtons("merge-sort");
+
         async function mergeSortAlgorithm(arr :Array<number>) {
         //Create two arrays for sorting
         let sorted:any = arr;
@@ -281,7 +285,7 @@ export function Footer() {
               for(let i = 0; i < array.length; i++){
                 newArray[i] = sorted[i];
               }
-              if(isStopped()) return;
+              if(isStopped()) return new Promise(resolve => resolve("stopped"));
               dispatch(updateArray(newArray));
               mergeColorUpdate(i);
               await stepTimeout();
@@ -314,8 +318,35 @@ export function Footer() {
         finishedSorting();
     }
     
-    function ResetDisable(){
+    function ResetButtons(){
         setDisable([false,false,false,false]);
+        let buttons:any = $(".sorting-algorithm-buttons").children();
+        for(let i = 0; i < buttons.length; i++){
+            if(buttons[i].classList.contains("no-click")){
+                buttons[i].classList.remove("no-click");
+            }
+        }
+    }
+
+    function DisableButtons(sortingType:String){
+        switch(sortingType){
+            case "bubble-sort":
+                setDisable([false, true, true, true]);
+                break;
+            case "selection-sort":
+                setDisable([true, false, true, true]);
+                break;
+            case "quick-sort":
+                setDisable([true, true, false, true]);
+                break;
+            case "merge-sort":
+                setDisable([true, true, true, false]);
+                break;
+        }
+        let buttons:any = $(".sorting-algorithm-buttons").children();
+        for(let i = 0; i < buttons.length; i++){
+            buttons[i].classList.add("no-click");
+        }
     }
 
     function isStopped(){
@@ -383,7 +414,7 @@ export function Footer() {
                     variant="contained"
                     className="new-array-button"
                     aria-label="New Array Button"
-                    onClick={() => {ResetDisable(); dispatch(newArray())}}
+                    onClick={() => {ResetButtons(); dispatch(newArray())}}
                     >
                     New Array
                 </Button>

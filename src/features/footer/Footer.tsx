@@ -20,12 +20,24 @@ export function Footer() {
 
     const [disable, setDisable] = useState([false, false, false, false]);
 
-    /*Bubble Sort Algorithm*/
+    /* Bubble Sort Algorithm */
     async function bubbleSort(): Promise<void>{
 
-        /*Disable all buttons but disable*/
+        /* Disable all buttons but bubble sort */
         DisableButtons("bubble-sort");
 
+         /* Main portion of the bubble sort */
+         let newArray: Array<number> = initializeArray();
+         for (let i = 0; i < array.length; i++) {
+             for (let j = 0; j < array.length - i -1; j++) {
+                 bubbleColorUpdate(i,j);
+                 await bubbleSwapValues(newArray, i, j);
+                 if(isStopped() && j > 2) return;
+             }
+         }
+         finishedSorting();
+
+        /* Update Colors for each iteration */
         function bubbleColorUpdate(i:number,j:number){
             let colorArr = [];
             for (let k = 0; k < i; k++){
@@ -41,7 +53,7 @@ export function Footer() {
             dispatch(colorChange(colorArr));
         }
          
-
+        /* Check if values need to be swapped */
         function bubbleSwapValues(arr:any ,i:number , j:number){
             return new Promise(resolve => {
                 setTimeout(() => {
@@ -57,22 +69,25 @@ export function Footer() {
                 }, array.length >80 ? 1000/(array.length) : 1000/(array.length/4) );
               });
         }
-        
-        let newArray: Array<number> = initializeArray();
-        for (let i = 0; i < array.length; i++) {
-            for (let j = 0; j < array.length - i -1; j++) {
-                bubbleColorUpdate(i,j);
-                await bubbleSwapValues(newArray, i, j);
-                if(isStopped() && j > 2) return;
-            }
-        }
-        finishedSorting();
     }
 
+    /* Selection Sort Algorithm */
     async function selectionSort(){
 
+        /* Disable all buttons except for selection sort */
         DisableButtons("selection-sort");
 
+        /* Main of Selection Sort */
+        let max: any;
+        let newArray: Array<number> = initializeArray();
+        for (let i = 0; i < array.length; i++) {
+            max = 0;
+            max = await selectionFindMax(newArray, i)
+            newArray = selectionArrayUpdate(newArray, max, i);
+        }
+        finishedSorting();
+
+        /* Update colors on each iteration */
         function selectionColorUpdate(i:number,j:number){
             let colorArr = [];
             for (let k = 0; k < i; k++){
@@ -86,30 +101,23 @@ export function Footer() {
             dispatch(colorChange(colorArr));
         }
 
-        async function selectionTraverseArray(arr:any, i:number){
-            let max:any;
+        /* Find current max of the array */
+        async function selectionFindMax(arr:any, i:number){
+            let max:number = 0;
             for (let j = 0; j < array.length - i; j++) {
+                if (arr[j] > arr[max]) {
+                    max = j;
+                }
+                if(isStopped() && j > 2) return new Promise(resolve => resolve("stopped"));
                 selectionColorUpdate(i,j);
-                max = await selectionMaxFinder(arr, j, max);
-                if(isStopped()) return new Promise(resolve => resolve("stopped"));
+                await stepTimeout();
             }
             return new Promise(resolve => {
               resolve(max);
             });
         }
 
-        function selectionMaxFinder(arr:any, j:number, maxIndex:number){
-            return new Promise(resolve => {
-                setTimeout(() => {
-                if (arr[j] > arr[maxIndex]) {
-                    max = j;
-                }
-                if(isStopped()) return new Promise(resolve => resolve("stopped"));
-                resolve(max);
-            }, array.length >80 ? 1000/(array.length) : 1000/(array.length/8) );
-          });
-        }
-
+        /* Update and Return current array */
         function selectionArrayUpdate(arr:any, maxIndex:number, step:number){
             let max:Array<number> = [];
             max = arr.splice(maxIndex, 1)
@@ -119,20 +127,20 @@ export function Footer() {
             dispatch(updateArray(updateArr));
             return(arr);
         }
-
-        let max: any;
-        let newArray: Array<number> = initializeArray();
-        for (let i = 0; i < array.length; i++) {
-            max = 0;
-            max = await selectionTraverseArray(newArray, i)
-            newArray = selectionArrayUpdate(newArray, max, i);
-        }
-        finishedSorting();
     }
 
+    /* Quick Sort Algorithm */
     async function quickSort(){
 
+        /* Disable all buttons but quicksort */
         DisableButtons("quick-sort");
+
+        /* Main of Quick Sort */
+        let newArray: Array<number> = initializeArray();
+        let sorted = await quickSortAlgorithm(newArray);
+        if(isStopped()) return;
+        dispatch(updateArray(sorted));
+        finishedSorting();
 
         async function partition(arr: Array<number>, start:number, end:number){
             // Taking the last element as the pivot
@@ -167,7 +175,6 @@ export function Footer() {
             stack.push(0);
             stack.push(arr.length - 1);
             
-            // There isn't an explicit peek() function
             // The loop repeats as long as we have unsorted subarrays
             while(stack[stack.length - 1] >= 0){
                 
@@ -204,6 +211,7 @@ export function Footer() {
             
         }
 
+        /* Update colors when it finishes sorting a certain section */
         function quickColorUpdate(step:number, start:number, end:number, finished = false){
             let colorArr: Array<string> = [];
             for(let i = 1; i + end < array.length-1; i++){
@@ -220,21 +228,23 @@ export function Footer() {
             }
             dispatch(colorChange(colorArr));
         }
-
-
-        let newArray: Array<number> = initializeArray();
-        let sorted = await quickSortAlgorithm(newArray);
-        if(isStopped()) return;
-        dispatch(updateArray(sorted));
-        finishedSorting();
     }
 
+    /* Merge Sort Algorithm */
     async function mergeSort(){
 
+        /*Disable all buttons but Merge Sort*/
         DisableButtons("merge-sort");
 
+        /*Main of Merge Sort*/
+        let newArray: Array<number> = initializeArray();
+        let merged = await mergeSortAlgorithm(newArray);
+        if(merged === "stopped") return;
+        dispatch(updateArray(merged));
+        finishedSorting();
+
         async function mergeSortAlgorithm(arr :Array<number>) {
-        //Create two arrays for sorting
+        /* Create two arrays for sorting */
         let sorted:any = arr;
         let n = sorted.length;
         let buffer:any = [];
@@ -242,7 +252,7 @@ export function Footer() {
         for (let size = 1; size < n; size *= 2) {
             for (let leftStart = 0; leftStart < n; leftStart += 2*size) {
       
-                //Get the two sub arrays
+                /* Get the two sub arrays */
                 let left = leftStart,
                 right = Math.min(left + size, n),
                 leftLimit = right,
@@ -255,10 +265,10 @@ export function Footer() {
                 if(isStopped() && size > 2) return new Promise(resolve => resolve("stopped"));
                 dispatch(updateArray(newArray));
                 mergeColorUpdate(leftStart);
-                //Merge the sub arrays
+                /* Merge the sub arrays */
                 await merge(left, right, leftLimit, rightLimit, sorted, buffer);
             }
-        //Swap the sorted sub array and merge them
+        /* Swap the sorted sub array and merge them */
         let temp = sorted;
         sorted = buffer;
         buffer = temp;
@@ -268,13 +278,11 @@ export function Footer() {
        });
 
     }
-        /*
-         * Function to merge the two haves arr[l..m] and arr[m+1..r] of array arr
-         */
+        /* Function to merge the two haves arr[l..m] and arr[m+1..r] of array arr */
         async function merge(left:number, right:number, leftLimit:number, rightLimit:number, sorted:Array<number>, buffer:Array<number>){
             let i = left;
             
-            //Compare the two sub arrays and merge them in the sorted order
+            /* Compare the two sub arrays and merge them in the sorted order */
             while (left < leftLimit && right < rightLimit) {
               if (sorted[left] <= sorted[right]) {
                 buffer[i++] = sorted[left++];
@@ -291,12 +299,12 @@ export function Footer() {
               await stepTimeout();
             }
           
-            //If there are elements in the left sub arrray then add it to the result
+            /* If there are elements in the left sub arrray then add it to the result */
             while (left < leftLimit) {
               buffer[i++] = sorted[left++];
             }
           
-            //If there are elements in the right sub array then add it to the result
+            /* If there are elements in the right sub array then add it to the result */
             while (right < rightLimit) {
               buffer[i++] = sorted[right++];
             }
@@ -310,14 +318,9 @@ export function Footer() {
             }
             dispatch(colorChange(colorArr));
         }
-
-        let newArray: Array<number> = initializeArray();
-        let merged = await mergeSortAlgorithm(newArray);
-        if(merged === "stopped") return;
-        dispatch(updateArray(merged));
-        finishedSorting();
     }
     
+    /*Reset Buttons to not be disabled and no-click*/
     function ResetButtons(){
         setDisable([false,false,false,false]);
         let buttons:any = $(".sorting-algorithm-buttons").children();
@@ -328,6 +331,7 @@ export function Footer() {
         }
     }
 
+    /*Disable the correct buttons and all buttons to no-click*/
     function DisableButtons(sortingType:String){
         switch(sortingType){
             case "bubble-sort":
@@ -349,6 +353,7 @@ export function Footer() {
         }
     }
 
+    /*Check if the sorting has been stopped*/
     function isStopped(){
         let buttons:any = $(".sorting-algorithm-buttons").children();
         for(let i = 0; i < buttons.length; i++){
@@ -359,6 +364,7 @@ export function Footer() {
         return true;
     }
 
+    /*Initialize an array from state.array*/
     function initializeArray(): Array<number> {
         let newArray: Array<number> = [];
         for(let i = 0; i < array.length; i++){
@@ -367,6 +373,7 @@ export function Footer() {
         return newArray;
     }
 
+    /*Set a timeout for a step*/
     function stepTimeout(){
         return new Promise(resolve => {
             setTimeout(() => {
@@ -375,7 +382,27 @@ export function Footer() {
       });
     }
 
+    /*Function for the after sorting visual*/
     async function finishedSorting(){
+        
+        /*Main of Finished Sorting*/
+        for(let i = 0; i < array.length; i++){
+            let newArrayColors:Array<string> = [];
+            for(let j = 0; j < array.length-1; j++){
+                newArrayColors[j] = arrayColors[j];
+            }
+            if(isStopped()) return;
+            await singleColumnChange(i, newArrayColors);
+        }
+        
+        /*When finished set array to purple*/
+        let purpleArray:Array<string> = [];
+        for(let i = 0; i <= array.length; i++){
+            purpleArray[i] = "purple";
+        }
+        dispatch(colorChange(purpleArray));
+
+        /*Change the color of a single column*/
         function singleColumnChange(step: number, newArrayColors: Array<string>){
             return new Promise(resolve => {
                 setTimeout(() => {
@@ -392,19 +419,6 @@ export function Footer() {
                 },  1000/(array.length) );
             });
         }
-        for(let i = 0; i < array.length; i++){
-            let newArrayColors:Array<string> = [];
-            for(let j = 0; j < array.length-1; j++){
-                newArrayColors[j] = arrayColors[j];
-            }
-            if(isStopped()) return;
-            await singleColumnChange(i, newArrayColors);
-        }
-        let purpleArray:Array<string> = [];
-        for(let i = 0; i <= array.length; i++){
-            purpleArray[i] = "purple";
-        }
-        dispatch(colorChange(purpleArray));
     }
 
     return(

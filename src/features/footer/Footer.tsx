@@ -1,76 +1,30 @@
-import SplitButton from '../Components/mat-ui-button'
-import Slider from '@mui/material/Slider'
 import { useState } from 'react'
 import Button from "@mui/material/Button";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { store } from '../../app/store';
-import { useEffect } from 'react';
 import {
     newArray,
     updateArray,
-    resetArray,
     selectArrayColors,
     selectArray,
     sizeChange,
     colorChange,
-    selectStopSort,
 } from '../SortingArea/sorting/sortingSlice';
 import './Footer.css';
-import { info } from 'console';
-import { setUncaughtExceptionCaptureCallback } from 'process';
+import $ from "jquery";
 
 export function Footer() {
-    const state = store.getState()
     const arrayColors = useAppSelector(selectArrayColors);
     const array = useAppSelector(selectArray);
     const dispatch = useAppDispatch();
-    let aController = new AbortController();
 
     const [disable, setDisable] = useState([false, false, false, false]);
-    const [stopSort, setStopSort] = useState(false); 
-
-    function stepTimeout(){
-        return new Promise(resolve => {
-            setTimeout(() => {
-            resolve(null);
-        }, array.length > 80 ? 1000/(array.length) : 1000/(array.length/8));
-      });
-    }
-
-    async function finishedSorting(){
-        function singleColumnChange(step: number, newArrayColors: Array<string>){
-            return new Promise(resolve => {
-                setTimeout(() => {
-                    for(let i = 0; i <= array.length; i++){
-                        if(i <= step){
-                            newArrayColors[i] = "lime";
-                        } else {
-                            newArrayColors[i] = "green";
-                        }
-                    }
-                    dispatch(colorChange(newArrayColors));
-                    resolve(newArrayColors);
-                },  1000/(array.length) );
-            });
-        }
-        for(let i = 0; i < array.length; i++){
-            let newArrayColors:Array<string> = [];
-            for(let j = 0; j < array.length-1; j++){
-                newArrayColors[j] = arrayColors[j];
-            }
-            await singleColumnChange(i, newArrayColors);
-        }
-        let purpleArray:Array<string> = [];
-        for(let i = 0; i <= array.length; i++){
-            purpleArray[i] = "purple";
-        }
-        dispatch(colorChange(purpleArray));
-    }
 
     async function bubbleSort(): Promise<void>{
-        let signal = aController.signal;
+
         setDisable([false, true, true, true]);
+
         function bubbleColorUpdate(i:number,j:number){
             let colorArr = [];
             for (let k = 0; k < i; k++){
@@ -95,25 +49,20 @@ export function Footer() {
                         arr[j] = arr[j + 1];
                         arr[j + 1] = tmp;
                         let updateArr = [...arr]
+                        if(isStopped()) return new Promise(resolve => resolve("stopped"));
                         dispatch(updateArray(updateArr));
                     }
                     resolve('resolved');
                 }, array.length >80 ? 1000/(array.length) : 1000/(array.length/4) );
               });
         }
-        let newArray: any = [];
-        for(let i = 0; i < array.length; i++){
-            newArray[i] = array[i];
-        }
-
+        
+        let newArray: Array<number> = initializeArray();
         for (let i = 0; i < array.length; i++) {
             for (let j = 0; j < array.length - i -1; j++) {
-                console.log(signal);
-                if (signal.aborted){
-                    return;
-                 }
                 bubbleColorUpdate(i,j);
                 await bubbleSwapValues(newArray, i, j);
+                if(isStopped() && j > 2) return;
             }
         }
         finishedSorting();
@@ -139,6 +88,7 @@ export function Footer() {
             for (let j = 0; j < array.length - i; j++) {
                 selectionColorUpdate(i,j);
                 max = await selectionMaxFinder(arr, j, max);
+                if(isStopped()) return new Promise(resolve => resolve("stopped"));
             }
             return new Promise(resolve => {
               resolve(max);
@@ -151,6 +101,7 @@ export function Footer() {
                 if (arr[j] > arr[maxIndex]) {
                     max = j;
                 }
+                if(isStopped()) return new Promise(resolve => resolve("stopped"));
                 resolve(max);
             }, array.length >80 ? 1000/(array.length) : 1000/(array.length/8) );
           });
@@ -162,25 +113,25 @@ export function Footer() {
             max = arr.splice(maxIndex, 1)
             arr.splice(arr.length-step, 0, max[0]);
             let updateArr = [...arr]
+            if(isStopped()) return;
             dispatch(updateArray(updateArr));
             return(arr);
         }
 
         let max: any;
-        let tempArray: any = [];
-        for(let i = 0; i < array.length; i++){
-            tempArray[i] = array[i];
-        }
+        let newArray: Array<number> = initializeArray();
         for (let i = 0; i < array.length; i++) {
             max = 0;
-            max = await selectionTraverseArray(tempArray, i)
-            tempArray = selectionArrayUpdate(tempArray, max, i);
+            max = await selectionTraverseArray(newArray, i)
+            newArray = selectionArrayUpdate(newArray, max, i);
         }
         finishedSorting();
     }
 
     async function quickSort(){
+
         setDisable([true, true, false, true]);
+
         async function partition(arr: Array<number>, start:number, end:number){
             // Taking the last element as the pivot
             const pivotValue = arr[end];
@@ -192,7 +143,8 @@ export function Footer() {
                 [arr[i], arr[pivotIndex]] = [arr[pivotIndex], arr[i]];
                 // Moving to next element
                 pivotIndex++;
-                }
+                }                
+                if(isStopped()) return new Promise(resolve => resolve("stopped"));
                 quickColorUpdate(i,start, end)
             }
             
@@ -223,10 +175,12 @@ export function Footer() {
                 let pivotIndex: any = 0;
                 pivotIndex = await partition(arr, start, end);
                 
+                
                 let newArray = [];
                 for(let i = 0; i < array.length; i++){
                     newArray[i] = arr[i];
                 }
+                if(isStopped()) return;
                 dispatch(updateArray(newArray));
                 
                 // If there are unsorted elements to the "left" of the pivot,
@@ -266,12 +220,9 @@ export function Footer() {
         }
 
 
-        let newArray: Array<number> = [];
-        for(let i = 0; i < array.length; i++){
-            newArray[i] = array[i];
-        }
-    
+        let newArray: Array<number> = initializeArray();
         let sorted = await quickSortAlgorithm(newArray);
+        if(isStopped()) return;
         dispatch(updateArray(sorted));
         finishedSorting();
     }
@@ -297,6 +248,7 @@ export function Footer() {
                 for(let i = 0; i < array.length; i++){
                     newArray[i] = sorted[i];
                 }
+                if(isStopped() && size > 2) return new Promise(resolve => resolve("stopped"));
                 dispatch(updateArray(newArray));
                 mergeColorUpdate(leftStart);
                 //Merge the sub arrays
@@ -329,6 +281,7 @@ export function Footer() {
               for(let i = 0; i < array.length; i++){
                 newArray[i] = sorted[i];
               }
+              if(isStopped()) return;
               dispatch(updateArray(newArray));
               mergeColorUpdate(i);
               await stepTimeout();
@@ -354,19 +307,73 @@ export function Footer() {
             dispatch(colorChange(colorArr));
         }
 
-        let arr: Array<number> = [];
-        for(let i = 0; i < array.length; i++){
-            arr[i] = array[i];
-        }
-
-        let merged = await mergeSortAlgorithm(arr);
+        let newArray: Array<number> = initializeArray();
+        let merged = await mergeSortAlgorithm(newArray);
+        if(merged === "stopped") return;
         dispatch(updateArray(merged));
         finishedSorting();
     }
     
     function ResetDisable(){
         setDisable([false,false,false,false]);
-        setStopSort(true);
+    }
+
+    function isStopped(){
+        let buttons:any = $(".sorting-algorithm-buttons").children();
+        for(let i = 0; i < buttons.length; i++){
+            if(buttons[i].disabled){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function initializeArray(): Array<number> {
+        let newArray: Array<number> = [];
+        for(let i = 0; i < array.length; i++){
+            newArray[i] = array[i];
+        }
+        return newArray;
+    }
+
+    function stepTimeout(){
+        return new Promise(resolve => {
+            setTimeout(() => {
+            resolve(null);
+        }, array.length > 80 ? 1000/(array.length) : 1000/(array.length/8));
+      });
+    }
+
+    async function finishedSorting(){
+        function singleColumnChange(step: number, newArrayColors: Array<string>){
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    for(let i = 0; i <= array.length; i++){
+                        if(i <= step){
+                            newArrayColors[i] = "lime";
+                        } else {
+                            newArrayColors[i] = "green";
+                        }
+                    }
+                    if(isStopped()) return new Promise(resolve => resolve("stopped"));
+                    dispatch(colorChange(newArrayColors));
+                    resolve(newArrayColors);
+                },  1000/(array.length) );
+            });
+        }
+        for(let i = 0; i < array.length; i++){
+            let newArrayColors:Array<string> = [];
+            for(let j = 0; j < array.length-1; j++){
+                newArrayColors[j] = arrayColors[j];
+            }
+            if(isStopped()) return;
+            await singleColumnChange(i, newArrayColors);
+        }
+        let purpleArray:Array<string> = [];
+        for(let i = 0; i <= array.length; i++){
+            purpleArray[i] = "purple";
+        }
+        dispatch(colorChange(purpleArray));
     }
 
     return(

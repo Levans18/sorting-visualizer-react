@@ -329,8 +329,8 @@ export function Footer() {
                 buttons[i].classList.remove("no-click");
             }
         }
-        let sizeButton:any = $(".array-size-slider")
-        sizeButton.classList.remove("no-click");
+        let sizeButton:any = $(".array-size-slider").children();
+        sizeButton[1].classList.remove("no-click");
     }
 
     /*Disable the correct buttons and all buttons to no-click*/
@@ -353,8 +353,8 @@ export function Footer() {
         for(let i = 0; i < buttons.length; i++){
             buttons[i].classList.add("no-click");
         }
-        let sizeButton:any = $(".array-size-slider")
-        sizeButton.classList.add("no-click");
+        let sizeButton:any = $(".array-size-slider").children();
+        sizeButton[1].classList.add("no-click");
     }
 
     /*Check if the sorting has been stopped*/
